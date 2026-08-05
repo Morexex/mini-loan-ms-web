@@ -20,6 +20,7 @@ Remote: https://github.com/Morexex/mini-loan-ms-web
 Start here:
 
 - [Project understanding (Milestone 0)](../mini-loan-ms-api/docs/01-project-understanding.md)
+- [System design (Milestone 1)](../mini-loan-ms-api/docs/02-system-design.md)
 - [API README](../mini-loan-ms-api/README.md)
 
 Especially:
@@ -36,7 +37,7 @@ Especially:
 
 ## Status
 
-Milestone 0 discovery docs live in the API repo (complete). Vue bootstrap follows API foundations (after Milestone 3–4).
+Milestones 0–1 docs live in the API repo (complete). Vue bootstrap follows API foundations (after Milestone 3–4).
 
 ## Git
 
