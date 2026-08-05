@@ -38,7 +38,7 @@ Especially:
 
 ## Status
 
-Milestones 0–4: API foundation + Sanctum cookie auth ready. Vue bootstrap can start against `/api/v1/login` after Vite app exists.
+Milestones 0–5: API has auth + customer module. Vue bootstrap can consume `/api/v1/customers` next.
 
 ## Git
 
