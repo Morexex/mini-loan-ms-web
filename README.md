@@ -38,7 +38,7 @@ Especially:
 
 ## Status
 
-Milestones 0–8: loan schedules are generated and readable via API. Next: disbursement.
+Milestones 0–9: loans can be approved, scheduled, and disbursed (Daraja gateway fakeable for tests). Next: STK repayments.
 
 ## Git
 
