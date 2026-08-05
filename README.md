@@ -38,7 +38,7 @@ Especially:
 
 ## Status
 
-Milestones 0–9: loans can be approved, scheduled, and disbursed (Daraja gateway fakeable for tests). Next: STK repayments.
+Milestones 0–10: repayment STK starts from internal Payment Intents. Next: callbacks + reconciliation.
 
 ## Git
 
