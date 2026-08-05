@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import OpsShell from '@/components/OpsShell.vue'
 import {
   extractEvidenceHints,
   fetchCandidateIntents,
@@ -10,9 +9,6 @@ import {
   rejectEvidence,
 } from '@/api/reconciliation'
 import type { PaymentIntentItem, WebhookLogItem } from '@/types'
-
-const auth = useAuthStore()
-const router = useRouter()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -115,79 +111,62 @@ async function submitReject(): Promise<void> {
   }
 }
 
-async function onLogout(): Promise<void> {
-  await auth.logout()
-  await router.push({ name: 'login' })
-}
-
 onMounted(loadQueue)
 </script>
 
 <template>
-  <div class="shell">
-    <header class="topbar">
-      <div>
-        <p class="brand">Mini Loan MS</p>
-        <p class="sub">Manual reconciliation</p>
-      </div>
-      <div class="topbar-actions">
-        <span class="operator">{{ auth.user?.email }}</span>
-        <button type="button" class="ghost" @click="loadQueue">Refresh</button>
-        <button type="button" class="ghost" @click="onLogout">Sign out</button>
-      </div>
-    </header>
+  <OpsShell title="Unmatched evidence" subtitle="Manual reconciliation">
+    <template #actions>
+      <button type="button" class="ghost" @click="loadQueue">Refresh</button>
+    </template>
+    <template #intro>
+      <p>
+        Review webhook payloads the automatic engine could not allocate. Matching always runs through
+        the API allocation service — this UI never invents money math.
+      </p>
+    </template>
 
-    <main class="content">
-      <section class="intro">
-        <h1>Unmatched evidence</h1>
-        <p>
-          Review webhook payloads the automatic engine could not allocate. Matching always runs through
-          the API allocation service — this UI never invents money math.
-        </p>
-      </section>
+    <p v-if="error" class="banner error">{{ error }}</p>
+    <p v-else-if="loading" class="banner">Loading queue…</p>
 
-      <p v-if="error" class="banner error">{{ error }}</p>
-      <p v-else-if="loading" class="banner">Loading queue…</p>
+    <section v-else class="queue">
+      <article v-if="webhooks.length === 0" class="empty">
+        <h2>Queue clear</h2>
+        <p>No unmatched webhook evidence right now.</p>
+      </article>
 
-      <section v-else class="queue">
-        <article v-if="webhooks.length === 0" class="empty">
-          <h2>Queue clear</h2>
-          <p>No unmatched webhook evidence right now.</p>
-        </article>
-
-        <article v-for="item in webhooks" :key="item.id" class="row">
-          <div>
-            <p class="provider">{{ item.provider }} · #{{ item.id }}</p>
-            <p class="meta">
-              <span class="mono">{{ extractEvidenceHints(item).phone ?? '—' }}</span>
-              ·
-              <span class="mono">{{ extractEvidenceHints(item).amount ?? '—' }}</span>
-              ·
-              <span class="mono">{{ extractEvidenceHints(item).receipt ?? 'no receipt' }}</span>
-            </p>
-            <p class="msg">{{ item.error_message }}</p>
-          </div>
-          <div class="row-actions">
-            <button type="button" @click="openMatch(item)">Match</button>
-            <button type="button" class="danger" @click="openReject(item)">Reject</button>
-          </div>
-        </article>
-      </section>
-
-      <section v-if="expiredIntents.length" class="expired">
-        <h2>Recently expired intents</h2>
-        <p class="hint">Useful candidates when a late callback arrives after TTL.</p>
-        <ul>
-          <li v-for="intent in expiredIntents" :key="intent.uuid">
-            <span class="mono">{{ intent.uuid.slice(0, 8) }}</span>
-            · loan {{ intent.loan_id }} ·
-            <span class="mono">{{ intent.phone }}</span>
+      <article v-for="item in webhooks" :key="item.id" class="row">
+        <div>
+          <p class="provider">{{ item.provider }} · #{{ item.id }}</p>
+          <p class="meta">
+            <span class="mono">{{ extractEvidenceHints(item).phone ?? '—' }}</span>
             ·
-            <span class="mono">{{ intent.amount }}</span>
-          </li>
-        </ul>
-      </section>
-    </main>
+            <span class="mono">{{ extractEvidenceHints(item).amount ?? '—' }}</span>
+            ·
+            <span class="mono">{{ extractEvidenceHints(item).receipt ?? 'no receipt' }}</span>
+          </p>
+          <p class="msg">{{ item.error_message }}</p>
+        </div>
+        <div class="row-actions">
+          <button type="button" @click="openMatch(item)">Match</button>
+          <button type="button" class="danger" @click="openReject(item)">Reject</button>
+        </div>
+      </article>
+    </section>
+
+    <section v-if="expiredIntents.length" class="expired">
+      <h2>Recently expired intents</h2>
+      <p class="hint">Useful candidates when a late callback arrives after TTL.</p>
+      <ul>
+        <li v-for="intent in expiredIntents" :key="intent.uuid">
+          <span class="mono">{{ intent.uuid.slice(0, 8) }}</span>
+          · loan {{ intent.loan_id }} ·
+          <span class="mono">{{ intent.phone }}</span>
+          ·
+          <span class="mono">{{ intent.amount }}</span>
+        </li>
+      </ul>
+    </section>
 
     <aside v-if="selected && mode" class="drawer" aria-modal="true">
       <div class="drawer-panel">
@@ -223,88 +202,19 @@ onMounted(loadQueue)
         <p v-if="actionError" class="error">{{ actionError }}</p>
 
         <div class="drawer-actions">
-          <button
-            v-if="mode === 'match'"
-            type="button"
-            :disabled="busy"
-            @click="submitMatch"
-          >
+          <button v-if="mode === 'match'" type="button" :disabled="busy" @click="submitMatch">
             {{ busy ? 'Matching…' : 'Confirm match' }}
           </button>
-          <button
-            v-else
-            type="button"
-            class="danger"
-            :disabled="busy"
-            @click="submitReject"
-          >
+          <button v-else type="button" class="danger" :disabled="busy" @click="submitReject">
             {{ busy ? 'Rejecting…' : 'Confirm reject' }}
           </button>
         </div>
       </div>
     </aside>
-  </div>
+  </OpsShell>
 </template>
 
 <style scoped>
-.shell {
-  min-height: 100vh;
-}
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: center;
-  padding: 1.25rem 1.75rem;
-  border-bottom: 1px solid var(--line);
-  background: rgba(255, 253, 248, 0.88);
-  backdrop-filter: blur(8px);
-  position: sticky;
-  top: 0;
-}
-
-.brand {
-  margin: 0;
-  font-size: 1.45rem;
-  color: var(--accent-deep);
-}
-
-.sub,
-.operator,
-.hint,
-.msg,
-.meta {
-  color: var(--muted);
-}
-
-.sub {
-  margin: 0.15rem 0 0;
-  font-size: 0.92rem;
-}
-
-.topbar-actions {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.content {
-  width: min(960px, calc(100% - 2rem));
-  margin: 0 auto;
-  padding: 1.75rem 0 3rem;
-}
-
-.intro h1 {
-  margin: 0;
-  font-size: 2rem;
-}
-
-.intro p {
-  max-width: 42rem;
-  color: var(--muted);
-}
-
 .banner {
   padding: 0.85rem 1rem;
   background: var(--panel);
@@ -345,14 +255,15 @@ onMounted(loadQueue)
 }
 
 .meta,
-.msg {
+.msg,
+.hint {
   margin: 0.25rem 0 0;
   font-size: 0.95rem;
+  color: var(--muted);
 }
 
 .row-actions,
-.drawer-actions,
-.topbar-actions {
+.drawer-actions {
   display: flex;
   gap: 0.5rem;
 }
@@ -397,6 +308,7 @@ button.danger {
   background: rgba(20, 32, 27, 0.35);
   display: grid;
   place-items: end;
+  z-index: 20;
 }
 
 .drawer-panel {
@@ -444,11 +356,6 @@ textarea {
   .row {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .topbar {
-    flex-direction: column;
-    align-items: flex-start;
   }
 }
 </style>

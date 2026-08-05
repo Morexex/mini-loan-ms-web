@@ -12,12 +12,18 @@ const router = createRouter({
     },
     {
       path: '/',
-      redirect: '/reconciliation',
+      redirect: '/reports',
     },
     {
       path: '/reconciliation',
       name: 'reconciliation',
       component: () => import('@/views/ReconciliationView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/reports',
+      name: 'reports',
+      component: () => import('@/views/ReportsView.vue'),
       meta: { requiresAuth: true },
     },
   ],
@@ -34,7 +40,7 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.guest && auth.isAuthenticated) {
-    return { name: 'reconciliation' }
+    return { name: 'reports' }
   }
 
   return true

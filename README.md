@@ -37,10 +37,11 @@ API must be running (`php artisan serve`) with:
 
 Default ops user (from API seeder): `ops@miniloan.test` / `password`
 
-### Milestone 13 surfaces
+### Milestone 13–14 surfaces
 
 - `/login` — Sanctum session login
-- `/reconciliation` — unmatched webhook queue, match to Payment Intent (reason required), reject with reason
+- `/reconciliation` — unmatched webhook queue, match/reject
+- `/reports` — portfolio overview KPIs + installment aging
 
 ## Documentation (lives in the API repo)
 
@@ -51,7 +52,7 @@ Default ops user (from API seeder): `ops@miniloan.test` / `password`
 
 ## Status
 
-Milestones 0–13: Vue ops shell with Sanctum login + manual reconciliation workspace. Broader CRUD screens can follow; allocation remains API-only.
+Milestones 0–14: Vue ops shell with login, manual reconciliation, and portfolio reports. Broader CRUD screens can follow; money math remains API-only.
 
 ## Git
 
