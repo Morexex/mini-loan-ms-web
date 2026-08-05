@@ -38,7 +38,7 @@ Especially:
 
 ## Status
 
-Milestones 0–6: API has auth, customers, and loan products. Next domain work is loan origination.
+Milestones 0–7: API supports customers, products, and loan origination/approval.
 
 ## Git
 
