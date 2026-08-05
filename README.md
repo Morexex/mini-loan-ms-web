@@ -38,7 +38,7 @@ Especially:
 
 ## Status
 
-Milestones 0–10: repayment STK starts from internal Payment Intents. Next: callbacks + reconciliation.
+Milestones 0–11: API now ingests Daraja STK + SMS forwarder webhooks into PaymentEvidence (allocation is Milestone 12). Vue app scaffold still deferred.
 
 ## Git
 
