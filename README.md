@@ -38,7 +38,7 @@ Especially:
 
 ## Status
 
-Milestones 0–2 docs live in the API repo (complete). Vue bootstrap follows API foundations (after Milestone 3–4).
+Milestones 0–3: API docs + Laravel foundation live in the API repo. Vue bootstrap follows auth (Milestone 4).
 
 ## Git
 
