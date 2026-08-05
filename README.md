@@ -38,7 +38,7 @@ Especially:
 
 ## Status
 
-Milestones 0–7: API supports customers, products, and loan origination/approval.
+Milestones 0–8: loan schedules are generated and readable via API. Next: disbursement.
 
 ## Git
 
