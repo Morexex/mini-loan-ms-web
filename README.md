@@ -38,7 +38,7 @@ Especially:
 
 ## Status
 
-Milestones 0–11: API now ingests Daraja STK + SMS forwarder webhooks into PaymentEvidence (allocation is Milestone 12). Vue app scaffold still deferred.
+Milestones 0–12: API reconciles STK/SMS evidence into payments, installment allocations, and wallet overpay. Vue app scaffold still deferred; manual recon UI is Milestone 13.
 
 ## Git
 
