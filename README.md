@@ -38,7 +38,7 @@ Especially:
 
 ## Status
 
-Milestones 0–5: API has auth + customer module. Vue bootstrap can consume `/api/v1/customers` next.
+Milestones 0–6: API has auth, customers, and loan products. Next domain work is loan origination.
 
 ## Git
 
