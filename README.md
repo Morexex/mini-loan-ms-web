@@ -38,7 +38,7 @@ Especially:
 
 ## Status
 
-Milestones 0–3: API docs + Laravel foundation live in the API repo. Vue bootstrap follows auth (Milestone 4).
+Milestones 0–4: API foundation + Sanctum cookie auth ready. Vue bootstrap can start against `/api/v1/login` after Vite app exists.
 
 ## Git
 
