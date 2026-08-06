@@ -24,7 +24,10 @@ async function onLogout(): Promise<void> {
         <p class="sub">{{ subtitle ?? title }}</p>
       </div>
       <nav class="nav">
-        <RouterLink to="/reconciliation">Reconciliation</RouterLink>
+        <RouterLink to="/customers">Customers</RouterLink>
+        <RouterLink to="/products">Products</RouterLink>
+        <RouterLink to="/loans">Loans</RouterLink>
+        <RouterLink to="/reconciliation">Recon</RouterLink>
         <RouterLink to="/reports">Reports</RouterLink>
       </nav>
       <div class="topbar-actions">
@@ -102,7 +105,7 @@ async function onLogout(): Promise<void> {
 }
 
 .content {
-  width: min(960px, calc(100% - 2rem));
+  width: min(1100px, calc(100% - 2rem));
   margin: 0 auto;
   padding: 1.75rem 0 3rem;
 }

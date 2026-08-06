@@ -12,7 +12,37 @@ const router = createRouter({
     },
     {
       path: '/',
-      redirect: '/reports',
+      redirect: '/loans',
+    },
+    {
+      path: '/customers',
+      name: 'customers',
+      component: () => import('@/views/CustomersView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/customers/:id',
+      name: 'customer-detail',
+      component: () => import('@/views/CustomerDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/products',
+      name: 'products',
+      component: () => import('@/views/ProductsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/loans',
+      name: 'loans',
+      component: () => import('@/views/LoansView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/loans/:id',
+      name: 'loan-detail',
+      component: () => import('@/views/LoanDetailView.vue'),
+      meta: { requiresAuth: true },
     },
     {
       path: '/reconciliation',
@@ -40,7 +70,7 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.guest && auth.isAuthenticated) {
-    return { name: 'reports' }
+    return { name: 'loans' }
   }
 
   return true

@@ -18,41 +18,46 @@ Remote: https://github.com/Morexex/mini-loan-ms-web
 ## Stack
 
 - Vue 3 · TypeScript · Pinia · Vue Router · Vite · Axios
-- Auth: Laravel Sanctum cookie SPA (`withCredentials`)
+- Auth: Laravel Sanctum cookie SPA (`withCredentials` + `withXSRFToken`)
 
 ## Quick start
 
 ```bash
 cp .env.example .env
-# VITE_API_URL=http://localhost:8000
+# VITE_API_URL must use the same hostname as the browser (localhost, not 127.0.0.1 mix)
 
 npm install
 npm run dev
 ```
 
-API must be running (`php artisan serve`) with:
+API must be running with matching `FRONTEND_URL` / `SANCTUM_STATEFUL_DOMAINS`.
 
-- `FRONTEND_URL=http://localhost:5173`
-- `SANCTUM_STATEFUL_DOMAINS=localhost:5173,127.0.0.1:5173`
+Default ops user: `ops@miniloan.test` / `password`
 
-Default ops user (from API seeder): `ops@miniloan.test` / `password`
+### Ops console surfaces
 
-### Milestone 13–14 surfaces
+| Route | Purpose |
+|-------|---------|
+| `/login` | Sanctum session login |
+| `/customers` | List/search/create |
+| `/customers/:id` | Detail + wallet + loans |
+| `/products` | Flat interest products |
+| `/loans` | Originate + filter |
+| `/loans/:id` | Hub: approve, disburse, collect STK, installments, intents |
+| `/reconciliation` | Unmatched match/reject |
+| `/reports` | Portfolio KPIs + aging |
 
-- `/login` — Sanctum session login
-- `/reconciliation` — unmatched webhook queue, match/reject
-- `/reports` — portfolio overview KPIs + installment aging
+### Demo journey
 
-## Documentation (lives in the API repo)
-
-- [Project understanding](../mini-loan-ms-api/docs/01-project-understanding.md)
-- [System design](../mini-loan-ms-api/docs/02-system-design.md)
-- [Reconciliation engine](../mini-loan-ms-api/docs/05-reconciliation-engine.md)
-- [API README](../mini-loan-ms-api/README.md)
+1. Create customer → create product → originate loan  
+2. Open loan → Approve → Disburse  
+3. Collect (Payment Intent + STK)  
+4. With fake Daraja, POST STK callback or use Recon if unmatched  
+5. Check Reports
 
 ## Status
 
-Milestones 0–15: API test matrix covers reconciliation failure modes; Vue ops shell has login, recon, and reports.
+Full ops workspace for the lending journey is in place. Money math remains API-only.
 
 ## Git
 
