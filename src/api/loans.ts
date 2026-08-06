@@ -52,3 +52,13 @@ export async function createPaymentIntent(
   )
   return data.data
 }
+
+export async function simulateStkSuccess(
+  loanId: number,
+  intentUuid: string,
+): Promise<PaymentIntentItem> {
+  const { data } = await api.post<{ data: PaymentIntentItem }>(
+    `/api/v1/loans/${loanId}/payment-intents/${intentUuid}/simulate-stk-success`,
+  )
+  return data.data
+}

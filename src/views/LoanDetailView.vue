@@ -12,6 +12,7 @@ import {
   disburseLoan,
   getLoan,
   listPaymentIntents,
+  simulateStkSuccess,
 } from '@/api/loans'
 import type { Loan, PaymentIntentItem } from '@/types'
 
@@ -35,6 +36,9 @@ const canDisburse = computed(() =>
 const canCollect = computed(() => loan.value?.status === 'active')
 
 const latestDisbursement = computed(() => loan.value?.disbursements?.[0] ?? null)
+const awaitingIntents = computed(() =>
+  intents.value.filter((intent) => intent.status === 'awaiting_callback'),
+)
 
 const paidCount = computed(
   () => loan.value?.installments?.filter((i) => i.status === 'paid').length ?? 0,
@@ -84,7 +88,7 @@ async function onDisburse(): Promise<void> {
   try {
     loan.value = await disburseLoan(loan.value.id)
     confirmDisburse.value = false
-    actionOk.value = 'Disbursement submitted (fake/sandbox Daraja).'
+    actionOk.value = 'Disbursement submitted via Daraja.'
     await load()
   } catch (e) {
     actionError.value = apiErrorMessage(e, 'Disburse failed.')
@@ -101,10 +105,26 @@ async function onCollect(): Promise<void> {
   try {
     const intent = await createPaymentIntent(loan.value.id, { amount: collectAmount.value })
     showCollect.value = false
-    actionOk.value = `Payment intent ${intent.uuid.slice(0, 8)}… → ${intent.status}`
+    actionOk.value = `Payment intent ${intent.uuid.slice(0, 8)}… → ${intent.status}. Use Simulate STK success if sandbox does not call back.`
     await load()
   } catch (e) {
     actionError.value = apiErrorMessage(e, 'STK / payment intent failed.')
+  } finally {
+    busy.value = false
+  }
+}
+
+async function onSimulateStk(intent: PaymentIntentItem): Promise<void> {
+  if (!loan.value) return
+  busy.value = true
+  actionError.value = null
+  actionOk.value = null
+  try {
+    const updated = await simulateStkSuccess(loan.value.id, intent.uuid)
+    actionOk.value = `Simulated STK success for ${updated.uuid.slice(0, 8)}… → ${updated.status}`
+    await load()
+  } catch (e) {
+    actionError.value = apiErrorMessage(e, 'STK simulation failed.')
   } finally {
     busy.value = false
   }
@@ -269,6 +289,7 @@ onMounted(load)
                   <th>UUID</th>
                   <th>Amount</th>
                   <th>Status</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -276,10 +297,27 @@ onMounted(load)
                   <td class="mono">{{ intent.uuid.slice(0, 8) }}…</td>
                   <td class="mono">{{ intent.amount }}</td>
                   <td><StatusBadge :status="intent.status" /></td>
+                  <td>
+                    <button
+                      v-if="intent.status === 'awaiting_callback'"
+                      type="button"
+                      class="btn ghost sm"
+                      :disabled="busy"
+                      @click="onSimulateStk(intent)"
+                    >
+                      Simulate STK success
+                    </button>
+                    <span v-else class="muted">—</span>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
+          <p v-if="awaitingIntents.length" class="muted tip">
+            Sandbox often will not prompt a personal phone. Use
+            <strong>Simulate STK success</strong> to post a Daraja-shaped callback through the real
+            allocation engine (assessment demo path).
+          </p>
         </section>
       </div>
 
@@ -340,7 +378,9 @@ onMounted(load)
             />
           </label>
           <p class="muted tip">
-            With <code>DARAJA_FAKE=true</code>, STK is simulated. Late/unmatched payments go to Recon.
+            Prefer sandbox test MSISDN <code>254708374149</code>. After STK is
+            <code>awaiting_callback</code>, use <strong>Simulate STK success</strong> on the intent
+            if Safaricom does not call back (same allocate path).
           </p>
           <p v-if="actionError" class="banner error">{{ actionError }}</p>
         </form>

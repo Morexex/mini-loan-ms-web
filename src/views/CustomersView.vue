@@ -73,7 +73,10 @@ onMounted(load)
       <button type="button" class="btn" @click="openCreate">New customer</button>
     </template>
     <template #intro>
-      <p class="muted">Phone is normalized to 2547… and used as the default M-Pesa MSISDN.</p>
+      <p class="muted">
+        Phone is normalized to 2547… For sandbox Daraja demos use
+        <code>254708374149</code> (seeded as Sandbox Test Borrower when you run seeders).
+      </p>
     </template>
 
     <div class="toolbar">
