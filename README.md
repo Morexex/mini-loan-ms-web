@@ -52,7 +52,7 @@ Default ops user (from API seeder): `ops@miniloan.test` / `password`
 
 ## Status
 
-Milestones 0–14: Vue ops shell with login, manual reconciliation, and portfolio reports. Broader CRUD screens can follow; money math remains API-only.
+Milestones 0–15: API test matrix covers reconciliation failure modes; Vue ops shell has login, recon, and reports.
 
 ## Git
 
