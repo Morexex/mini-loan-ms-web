@@ -33,42 +33,47 @@ onMounted(load)
 </script>
 
 <template>
-  <OpsShell title="Customer detail" subtitle="Wallet & loans">
+  <OpsShell :title="customer?.name ?? 'Customer'" subtitle="Wallet & loans">
     <template #actions>
       <RouterLink class="btn ghost" to="/customers">Back</RouterLink>
       <button type="button" class="btn ghost" @click="load">Refresh</button>
+      <RouterLink
+        v-if="customer"
+        class="btn"
+        :to="{ path: '/loans', query: { customer_id: String(customer.id) } }"
+      >
+        Originate loan
+      </RouterLink>
     </template>
 
     <p v-if="error" class="banner error">{{ error }}</p>
     <p v-else-if="loading" class="banner">Loading…</p>
 
     <template v-else-if="customer">
-      <section class="panel grid-2">
+      <section class="panel hero-card">
         <div>
-          <h2 style="margin: 0">{{ customer.name }}</h2>
+          <p class="eyebrow">Borrower #{{ customer.id }}</p>
+          <h2>{{ customer.name }}</h2>
           <p class="muted mono">{{ customer.phone }} · ID {{ customer.id_number }}</p>
           <p v-if="customer.email" class="muted">{{ customer.email }}</p>
         </div>
-        <div>
-          <p class="muted" style="margin: 0; text-transform: uppercase; font-size: 0.8rem; font-weight: 700">
-            Wallet balance
-          </p>
-          <p class="mono" style="margin: 0.35rem 0 0; font-size: 1.6rem; font-weight: 700">
+        <div class="stat wallet">
+          <p class="stat-label">Wallet balance</p>
+          <p class="stat-value">
             {{ customer.wallet?.balance ?? '0.00' }}
-            {{ customer.wallet?.currency ?? 'KES' }}
+            <span class="currency">{{ customer.wallet?.currency ?? 'KES' }}</span>
           </p>
+          <p class="muted fine">Credit from overpayments (ADR 0003)</p>
         </div>
       </section>
 
-      <section class="panel" style="margin-top: 0.85rem">
-        <div class="row-between">
-          <h2 style="margin: 0; font-size: 1.15rem">Loans</h2>
-          <RouterLink :to="{ path: '/loans', query: { customer_id: String(customer.id) } }">
-            Originate loan
-          </RouterLink>
+      <section class="panel">
+        <h2 class="panel-title">Loans</h2>
+        <div v-if="loans.length === 0" class="empty">
+          <strong>No loans yet</strong>
+          Originate from the actions bar to start the lifecycle.
         </div>
-        <p v-if="loans.length === 0" class="muted">No loans for this customer.</p>
-        <div v-else class="table-wrap" style="margin-top: 0.75rem">
+        <div v-else class="table-wrap">
           <table class="data">
             <thead>
               <tr>
@@ -83,7 +88,9 @@ onMounted(load)
                 <td class="mono">#{{ loan.id }}</td>
                 <td class="mono">{{ loan.principal_amount }}</td>
                 <td><StatusBadge :status="loan.status" /></td>
-                <td><RouterLink :to="`/loans/${loan.id}`">Open</RouterLink></td>
+                <td>
+                  <RouterLink class="btn ghost sm" :to="`/loans/${loan.id}`">Open</RouterLink>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -92,3 +99,59 @@ onMounted(load)
     </template>
   </OpsShell>
 </template>
+
+<style scoped>
+.hero-card {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.hero-card h2 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.wallet {
+  background: linear-gradient(145deg, #0d7a68 0%, #085649 100%);
+  border: none;
+  color: #eef7f3;
+}
+
+.wallet .stat-label,
+.wallet .muted {
+  color: rgba(238, 247, 243, 0.72);
+}
+
+.wallet .stat-value {
+  color: #fff;
+  font-size: 1.7rem;
+}
+
+.currency {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.fine {
+  font-size: 0.82rem;
+  margin: 0.4rem 0 0;
+}
+
+@media (max-width: 720px) {
+  .hero-card {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

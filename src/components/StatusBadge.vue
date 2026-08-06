@@ -1,50 +1,73 @@
 <script setup lang="ts">
 defineProps<{ status: string | null | undefined }>()
+
+const tone = (status?: string | null): string => {
+  const s = status ?? ''
+  if (['active', 'completed', 'posted', 'paid', 'disbursed', 'processed'].includes(s)) return 'ok'
+  if (
+    [
+      'pending',
+      'approved',
+      'scheduled',
+      'submitted',
+      'awaiting_callback',
+      'matched',
+      'disbursement_requested',
+    ].includes(s)
+  )
+    return 'warn'
+  if (['failed', 'expired', 'overdue', 'unmatched', 'cancelled'].includes(s)) return 'danger'
+  if (['partially_paid'].includes(s)) return 'info'
+  return 'neutral'
+}
 </script>
 
 <template>
-  <span class="badge" :data-status="status ?? 'unknown'">{{ status ?? '—' }}</span>
+  <span class="badge" :data-tone="tone(status)">{{ status ?? '—' }}</span>
 </template>
 
 <style scoped>
 .badge {
-  display: inline-block;
-  padding: 0.15rem 0.45rem;
-  border: 1px solid var(--line);
-  background: #fff;
-  font-size: 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 0.72rem;
   font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
+  white-space: nowrap;
 }
 
-.badge[data-status='active'],
-.badge[data-status='completed'],
-.badge[data-status='posted'],
-.badge[data-status='paid'],
-.badge[data-status='awaiting_callback'],
-.badge[data-status='disbursed'] {
-  border-color: #9fc9bf;
-  color: var(--accent-deep);
-  background: #eef8f4;
+.badge[data-tone='ok'] {
+  color: var(--ok);
+  background: var(--ok-soft);
+  border-color: rgba(6, 118, 71, 0.2);
 }
 
-.badge[data-status='pending'],
-.badge[data-status='approved'],
-.badge[data-status='scheduled'],
-.badge[data-status='submitted'] {
-  border-color: #d6c89a;
+.badge[data-tone='warn'] {
   color: var(--warn);
-  background: #fff8e8;
+  background: var(--warn-soft);
+  border-color: rgba(154, 103, 0, 0.22);
 }
 
-.badge[data-status='failed'],
-.badge[data-status='expired'],
-.badge[data-status='overdue'],
-.badge[data-status='unmatched'] {
-  border-color: #e0b4b4;
+.badge[data-tone='danger'] {
   color: var(--danger);
-  background: #fff1f1;
+  background: var(--danger-soft);
+  border-color: rgba(180, 35, 24, 0.22);
+}
+
+.badge[data-tone='info'] {
+  color: var(--info);
+  background: var(--info-soft);
+  border-color: rgba(23, 92, 211, 0.2);
+}
+
+.badge[data-tone='neutral'] {
+  color: var(--muted);
+  background: #eef1ef;
+  border-color: var(--line);
 }
 </style>
